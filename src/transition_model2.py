@@ -1,6 +1,6 @@
 import numpy as np
 from tools.functions import observation_to_gray, FastImagePlot
-from buffer import Buffer
+from buffer2 import Buffer
 import cv2
 import tensorflow as tf
 import time

@@ -1,6 +1,6 @@
 import numpy as np
 from tools.functions import str_2_array
-from buffer import Buffer
+from buffer2 import Buffer
 
 """
 Implementation of HG-DAgger without uncertainty estimation

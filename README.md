@@ -1,4 +1,55 @@
 # Interactive-Learning-of-Temporal-Features-for-Control-TF2
+
+
+## Usage
+
+### 1. Install the Necessary Python Environment
+
+Before using the modified Gym environments, you need to install the required Python environment. Please refer to the 'pyproject.toml' file for the necessary dependencies.
+
+### 2. Register the Modified Gym Environments
+
+Follow these steps to register the modified Gym environments into Gym:
+
+#### Step 1: Copy Environment Files
+
+1. Locate the directory where the Gym package is installed. For example, if your Gym is installed at `/home/lzt/.cache/pypoetry/virtualenvs/your-project-name-thTShJqR-py3.8/lib/python3.8/site-packages/gym/envs`, navigate to that directory.
+
+2. Copy the following environment files into the `classic_control` subdirectory:
+
+   - `continuous_mountain_car_HD.py`
+   - `pendulum_HD.py`
+
+#### Step 2: Modify '__init__.py'
+
+Edit the '__init__.py' file located in the `gym/envs` directory. Register the new environments by adding the following code snippets:
+
+```python
+from gym.envs.registration import register
+
+# For Continuous Mountain Car HD
+register(
+    id='MountainCarContinuous-HD-v0',
+    entry_point='gym.envs.classic_control:Continuous_MountainCarHDEnv',
+    max_episode_steps=2000,
+    reward_threshold=195.0,
+)
+
+# Add any other custom environments here if needed
+```
+
+#### Step 3: Modify 'classic_control/__init__.py'
+
+Edit the '__init__.py' file located in the `classic_control` directory. Import the new environment by adding the following line:
+
+```python
+from gym.envs.classic_control.continuous_mountain_car_HD import Continuous_MountainCarHDEnv
+```
+
+With these steps completed, you should have successfully registered the modified Gym environments for use in your project.
+```
+
+
 ### Transition model
 
 Inputs to the transition model:

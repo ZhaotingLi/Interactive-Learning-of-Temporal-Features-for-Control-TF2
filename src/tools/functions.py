@@ -49,7 +49,7 @@ class FastImagePlot:
         self.im = plt.imshow(np.reshape(observation, [self.image_size, self.image_size]),
                              cmap='gray', vmin=vmin, vmax=vmax)
         plt.show(block=False)
-        self.window.canvas.set_window_title(title_name)
+        # self.window.canvas.set_window_title(title_name)
         self.window.canvas.draw()
 
     def refresh(self, observation):

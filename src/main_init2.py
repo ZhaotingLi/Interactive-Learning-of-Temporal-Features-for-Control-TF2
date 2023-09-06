@@ -31,6 +31,7 @@ exp_num = args.exp_num
 # Load from config files
 config = load_config_data('config_files/' + config_file + '.ini')
 config_general = config['GENERAL']
+print("check config_general", config_general)
 config_transition_model = config['TRANSITION_MODEL']
 config_agent = config['AGENT']
 config_feedback = config['FEEDBACK']
