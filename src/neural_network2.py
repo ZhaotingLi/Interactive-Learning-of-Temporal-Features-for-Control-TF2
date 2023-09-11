@@ -135,6 +135,40 @@ class NeuralNetwork:
         # Model creation
         model_policy = tf.keras.Model(inputs=[state_representation_input], outputs=[self.policy_output])
         return model_policy
+    
+    def Human_model(self):
+
+        # Inputs
+        obs_dim = 4 # for cart pole
+        state_input  = tf.keras.layers.Input(shape=(obs_dim), batch_size=None, name='state_input')
+        action_input = tf.keras.layers.Input(shape=(self.dim_a), batch_size=None, name='action_input')
+
+        # Concatenate branches
+        concat_0 = tf.concat([state_input , action_input], axis=1, name='concat_0')
+        # Fully connected layers
+
+        fc_1 = tf.keras.layers.Dense(512, activation="tanh", name='fc_1')(concat_0)
+        fc_2 = tf.keras.layers.Dense(512, activation="tanh", name='fc_2')(fc_1)
+
+
+        #x = tf.keras.layers.Dense(self.dim_a, activation="tanh")(fc_2)
+
+
+        #net = tf.keras.layers.Dense(self.dim_a, activation=lambda x: tl.act.hard_tanh(x), name = 'htanh')(fc_2)
+
+        #net = tf.keras.layers.Lambda(self.my_relu)(net)
+
+        #fc_3 = tf.keras.layers.Dense(self.dim_a, activation=self.custom_activation, name='custom')(fc_2)
+        fc_3 = tf.keras.layers.Dense(self.dim_a, activation="tanh", name='fc_3')(fc_2)
+
+
+
+        self.h_prediction = fc_3
+
+        # Model creation
+        model_Human = tf.keras.Model(inputs=[state_input, action_input], outputs=[self.h_prediction], name="Human model")
+        #model_Human.summary()
+        return model_Human
 
     def save_transition_model(self):
         if not os.path.exists(self.network_loc):

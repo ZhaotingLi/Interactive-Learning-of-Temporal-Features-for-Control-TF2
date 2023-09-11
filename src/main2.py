@@ -113,7 +113,9 @@ for i_episode in range(max_num_of_episodes):
 
             if(not low_dimension_state):
                 transition_model.train(neural_network, t_total, done, trajectories_database, i_episode)
-            agent.train(neural_network, transition_model, action, t_total, done, i_episode)
+
+            # agent.train(neural_network, transition_model, action, t_total, done, i_episode)
+            agent.TRAIN_Human_Model_included(action, h, state_representation, t_total, done )
 
 
 
