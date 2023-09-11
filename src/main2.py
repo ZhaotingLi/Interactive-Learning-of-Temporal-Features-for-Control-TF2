@@ -12,6 +12,8 @@ Main loop of the algorithm described in the paper 'Interactive Learning of Tempo
 total_feedback, total_time_steps, trajectories_database, total_reward = [], [], [], []
 t_total, h_counter, last_t_counter, omg_c, eval_counter, total_r = 1, 0, 0, 0, 0, 0
 human_done, evaluation, random_agent, evaluation_started = False, False, False, False
+# Train_with_HumanModel = False # D-COURCH
+Train_with_HumanModel = True # BD-COURCH
 
 init_time = time.time()
 
@@ -67,8 +69,8 @@ for i_episode in range(max_num_of_episodes):
         if(not low_dimension_state):
             state_representation = transition_model.get_state_representation(neural_network, observation,  i_episode, t)
         else:
-            obs_dim = 3 # for pendulum
-            # obs_dim = 4 # for cart pole
+            # obs_dim = 3 # for pendulum
+            obs_dim = 4 # for cart pole
             state_representation = observation.reshape(1,obs_dim)
         
         action = agent.action(neural_network, state_representation, i_episode, t)
@@ -113,9 +115,10 @@ for i_episode in range(max_num_of_episodes):
 
             if(not low_dimension_state):
                 transition_model.train(neural_network, t_total, done, trajectories_database, i_episode)
-
-            # agent.train(neural_network, transition_model, action, t_total, done, i_episode)
-            agent.TRAIN_Human_Model_included(action, h, state_representation, t_total, done )
+            if not Train_with_HumanModel:   
+                agent.train(neural_network, transition_model, action, t_total, done, i_episode)
+            else:
+                agent.TRAIN_Human_Model_included(action, h, state_representation, t_total, done )
 
 
 

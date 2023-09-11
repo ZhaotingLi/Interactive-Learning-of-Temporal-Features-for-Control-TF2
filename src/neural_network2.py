@@ -10,8 +10,8 @@ class NeuralNetwork:
         self.policy_learning_rate = policy_learning_rate
         self.image_width = image_size  # we assume that the image is a square
         self.dim_a = dim_a
-        self.dim_o = 3 # pendulum
-        # self.dim_o = 4 # cart pole
+        # self.dim_o = 3 # pendulum
+        self.dim_o = 4 # cart pole
         self.network_loc = network_loc
         self.transition_model_learning_rate = transition_model_learning_rate
 

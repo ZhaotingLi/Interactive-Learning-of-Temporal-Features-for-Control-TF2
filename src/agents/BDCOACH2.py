@@ -29,8 +29,8 @@ class BDCOACH:
         self.human_model_included = True
         self.agent_with_hm_learning_rate = 1e-3
         self.human_model_learning_rate = 1e-3
-        # self.dim_o = 4 # cart pole
-        self.dim_o = 3 # pendulum
+        self.dim_o = 4 # cart pole
+        # self.dim_o = 3 # pendulum
         self.h_threshold = 0.1
         self.action_limit = 1
 

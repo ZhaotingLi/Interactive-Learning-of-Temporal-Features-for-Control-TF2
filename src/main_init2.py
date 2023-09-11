@@ -2,7 +2,7 @@ import gym
 from feedback import Feedback
 import os
 import argparse
-#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # switch to CPU
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # switch to CPU, seems that the GPU on my pc is quite slow?
 from buffer2 import Buffer
 from agents.selector2 import agent_selector
 from transition_model2 import TransitionModel
