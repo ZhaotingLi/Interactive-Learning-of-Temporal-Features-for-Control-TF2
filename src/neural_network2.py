@@ -107,6 +107,31 @@ class NeuralNetwork:
         fc_7 = tf.keras.layers.Dense(self.dim_a, activation="tanh", name='fc_7')(fc_6)
         self.policy_output = fc_7
 
+    
+        # print(state_representation_input)
+        # print fc_5 size
+        print(fc_5)
+        print(fc_6)
+
+        # Model creation
+        model_policy = tf.keras.Model(inputs=[state_representation_input], outputs=[self.policy_output])
+        return model_policy
+    
+    def policy_model_low_dim(self):
+
+        # Inputs
+        # obs_dim = 3 # for pendulum
+        obs_dim = 4 # for cart pole
+        state_representation_input = tf.keras.layers.Input(shape=(obs_dim), batch_size=None, name='state_representation_input')  
+        # self.policy_input = tf.keras.layers.InputLayer(input_shape=(3), batch_size=None)(state_representation_input)
+
+        print(state_representation_input)
+        # Fully connected layers
+        fc_5 = tf.keras.layers.Dense(128, activation="relu", name='fc_5')(state_representation_input )
+        fc_6 = tf.keras.layers.Dense(128, activation="relu", name='fc_6')(fc_5)
+        fc_7 = tf.keras.layers.Dense(self.dim_a, activation="tanh", name='fc_7')(fc_6)
+        self.policy_output = fc_7
+
         # Model creation
         model_policy = tf.keras.Model(inputs=[state_representation_input], outputs=[self.policy_output])
         return model_policy

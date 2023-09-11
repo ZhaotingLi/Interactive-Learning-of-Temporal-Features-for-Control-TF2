@@ -29,6 +29,8 @@ if count_down:
         print(' ' + str(10 - i) + '...')
         time.sleep(1)
 
+low_dimension_state = True  # if true, use low dimensional state representation
+
 # Start training loop
 for i_episode in range(max_num_of_episodes):
     print('Starting episode number', i_episode)
@@ -37,6 +39,8 @@ for i_episode in range(max_num_of_episodes):
         transition_model.new_episode()
 
     observation = env.reset()  # reset environment at the beginning of the episode
+
+    print(observation)
 
     past_action, past_observation, episode_trajectory, h_counter, r = None, None, [], 0, 0  # reset variables for new episode
 
@@ -60,9 +64,17 @@ for i_episode in range(max_num_of_episodes):
 
 
         # Map action from observation
-        state_representation = transition_model.get_state_representation(neural_network, observation,  i_episode, t)
+        if(not low_dimension_state):
+            state_representation = transition_model.get_state_representation(neural_network, observation,  i_episode, t)
+        else:
+            # obs_dim = 3 # for pendulum
+            obs_dim = 4 # for cart pole
+            state_representation = observation.reshape(1,obs_dim)
+        
         action = agent.action(neural_network, state_representation, i_episode, t)
 
+        # print action
+        print(action)
 
         # Act
         observation, reward, environment_done, info = env.step(action)
@@ -72,14 +84,20 @@ for i_episode in range(max_num_of_episodes):
         done = human_feedback.ask_for_done() or environment_done
 
         # Compute new hidden state of LSTM
-        transition_model.compute_lstm_hidden_state(neural_network, action)
+        if(not low_dimension_state):
+            transition_model.compute_lstm_hidden_state(neural_network, action)
 
         # Append transition to database
         if not evaluation:
             if past_action is not None and past_observation is not None:
-                episode_trajectory.append([past_observation, past_action, transition_model.processed_observation])  # append o, a, o' (not really necessary to store it like this)
-
-            past_observation, past_action = transition_model.processed_observation, action
+                if(not low_dimension_state):
+                    episode_trajectory.append([past_observation, past_action, transition_model.processed_observation])  # append o, a, o' (not really necessary to store it like this)
+                else:
+                    episode_trajectory.append([past_observation, past_action, observation])
+            if(not low_dimension_state):
+                past_observation, past_action = transition_model.processed_observation, action
+            else:
+                past_observation, past_action = observation, action
 
             if t % 100 == 0 or done:
                 trajectories_database.append(episode_trajectory)  # append episode trajectory to database
@@ -93,8 +111,8 @@ for i_episode in range(max_num_of_episodes):
             if done:
                 t_total = done  # tell the agents that the episode finished
 
-
-            transition_model.train(neural_network, t_total, done, trajectories_database, i_episode)
+            if(not low_dimension_state):
+                transition_model.train(neural_network, t_total, done, trajectories_database, i_episode)
             agent.train(neural_network, transition_model, action, t_total, done, i_episode)
 
 

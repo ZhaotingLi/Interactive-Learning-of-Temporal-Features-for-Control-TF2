@@ -11,6 +11,8 @@ D-COACH implementation
 class DCOACH:
     def __init__(self, dim_a, action_upper_limits, action_lower_limits, e, buffer_min_size, buffer_max_size,
                  buffer_sampling_rate, buffer_sampling_size, train_end_episode):
+        self.low_dim_state = True
+
         # Initialize variables
         self.h = None
         self.state_representation = None
@@ -77,6 +79,20 @@ class DCOACH:
 
         self._single_update(neural_network, state_representation_batch, action_label_batch)
 
+    
+    def _batch_update_LowDim(self, neural_network, transition_model, batch, i_episode, t):
+        observation_sequence_batch = [np.array(pair[0]) for pair in batch]  # state(t) sequence
+        action_sequence_batch = [np.array(pair[1]) for pair in batch]
+        current_observation_batch = [np.array(pair[2]) for pair in batch]  # last
+        action_label_batch = [np.array(pair[3]) for pair in batch]
+
+        batch_size = len(observation_sequence_batch)
+        obs_dim = 4 # for cart pole
+        current_observation_batch_tf = tf.convert_to_tensor(
+            np.reshape(current_observation_batch, [batch_size, obs_dim]), dtype=tf.float32)
+        
+        self._single_update(neural_network, current_observation_batch_tf, action_label_batch)
+
 
 
     def feed_h(self, h):
@@ -85,8 +101,12 @@ class DCOACH:
     def action(self, neural_network, state_representation, i_episode, t):
         self.count += 1
         self.state_representation = state_representation
+        # shape and type of state_representation
+        print('state_representation', self.state_representation.shape, " ",  self.state_representation.dtype)
+
         if i_episode == 0 and t == 0 :
-            self.policy_model = neural_network.policy_model()
+            # self.policy_model = neural_network.policy_model()
+            self.policy_model = neural_network.policy_model_low_dim()
 
 
 
@@ -116,19 +136,29 @@ class DCOACH:
             print('agent single update')
             print("feedback:", self.h)
 
-            # Add last step to memory buffer
-            if transition_model.last_step(self.policy_action_label) is not None:
-                self.buffer.add(transition_model.last_step(self.policy_action_label))
+            if self.low_dim_state:
+                self.buffer.add([self.state_representation, action, self.state_representation, self.policy_action_label])
+            else:
+                # Add last step to memory buffer
+                if transition_model.last_step(self.policy_action_label) is not None:
+                    print("appended data", transition_model.last_step(self.policy_action_label))
+                    self.buffer.add(transition_model.last_step(self.policy_action_label))
 
             # Train sampling from buffer
             if self.buffer.initialized():
                 print('Train sampling from buffer')
 
                 batch = self.buffer.sample(batch_size=self.buffer_sampling_size)  # TODO: probably this config thing should not be here
-                self._batch_update(neural_network, transition_model, batch, i_episode, t)
+                if self.low_dim_state:
+                    self._batch_update_LowDim(neural_network, transition_model, batch, i_episode, t)
+                else:
+                    self._batch_update(neural_network, transition_model, batch, i_episode, t)
 
         # Train policy every k time steps from buffer
         if self.buffer.initialized() and t % self.buffer_sampling_rate == 0 or (self.train_end_episode and done):
             print('Train policy every k time steps from buffer')
             batch = self.buffer.sample(batch_size=self.buffer_sampling_size)
-            self._batch_update(neural_network, transition_model, batch, i_episode, t)
+            if self.low_dim_state:
+                self._batch_update_LowDim(neural_network, transition_model, batch, i_episode, t)
+            else:
+                self._batch_update(neural_network, transition_model, batch, i_episode, t)
