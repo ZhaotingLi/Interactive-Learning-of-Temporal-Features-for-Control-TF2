@@ -29,7 +29,8 @@ class BDCOACH:
         self.human_model_included = True
         self.agent_with_hm_learning_rate = 1e-3
         self.human_model_learning_rate = 1e-3
-        self.dim_o = 4 # cart pole
+        # self.dim_o = 4 # cart pole
+        self.dim_o = 3 # pendulum
         self.h_threshold = 0.1
         self.action_limit = 1
 
@@ -94,9 +95,8 @@ class BDCOACH:
         action_label_batch = [np.array(pair[3]) for pair in batch]
 
         batch_size = len(observation_sequence_batch)
-        obs_dim = 4 # for cart pole
         current_observation_batch_tf = tf.convert_to_tensor(
-            np.reshape(current_observation_batch, [batch_size, obs_dim]), dtype=tf.float32)
+            np.reshape(current_observation_batch, [batch_size, self.dim_o]), dtype=tf.float32)
         
         self._single_update(current_observation_batch_tf, action_label_batch)
 

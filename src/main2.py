@@ -67,8 +67,8 @@ for i_episode in range(max_num_of_episodes):
         if(not low_dimension_state):
             state_representation = transition_model.get_state_representation(neural_network, observation,  i_episode, t)
         else:
-            # obs_dim = 3 # for pendulum
-            obs_dim = 4 # for cart pole
+            obs_dim = 3 # for pendulum
+            # obs_dim = 4 # for cart pole
             state_representation = observation.reshape(1,obs_dim)
         
         action = agent.action(neural_network, state_representation, i_episode, t)

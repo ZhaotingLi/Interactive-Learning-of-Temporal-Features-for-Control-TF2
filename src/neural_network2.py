@@ -10,6 +10,8 @@ class NeuralNetwork:
         self.policy_learning_rate = policy_learning_rate
         self.image_width = image_size  # we assume that the image is a square
         self.dim_a = dim_a
+        self.dim_o = 3 # pendulum
+        # self.dim_o = 4 # cart pole
         self.network_loc = network_loc
         self.transition_model_learning_rate = transition_model_learning_rate
 
@@ -120,8 +122,7 @@ class NeuralNetwork:
     def policy_model_low_dim(self):
 
         # Inputs
-        # obs_dim = 3 # for pendulum
-        obs_dim = 4 # for cart pole
+        obs_dim = self.dim_o 
         state_representation_input = tf.keras.layers.Input(shape=(obs_dim), batch_size=None, name='state_representation_input')  
         # self.policy_input = tf.keras.layers.InputLayer(input_shape=(3), batch_size=None)(state_representation_input)
 
@@ -139,7 +140,7 @@ class NeuralNetwork:
     def Human_model(self):
 
         # Inputs
-        obs_dim = 4 # for cart pole
+        obs_dim = self.dim_o
         state_input  = tf.keras.layers.Input(shape=(obs_dim), batch_size=None, name='state_input')
         action_input = tf.keras.layers.Input(shape=(self.dim_a), batch_size=None, name='action_input')
 
